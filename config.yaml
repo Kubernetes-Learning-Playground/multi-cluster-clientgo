@@ -1,0 +1,13 @@
+clusters:                     # 集群列表
+  - metadata:
+      clusterName: cluster1   # 自定义集群名
+      insecure: true          # 是否开启跳过tls证书认证
+      configPath: /Users/zhenyu.jiang/go/src/golanglearning/new_project/multi_cluster_client/resource/config2 # kube config配置文件地址
+  - metadata:
+      clusterName: cluster2
+      insecure: true
+      configPath: /Users/zhenyu.jiang/go/src/golanglearning/new_project/multi_cluster_client/resource/config1
+  - metadata:
+      clusterName: cluster3
+      insecure: true
+      configPath: /Users/zhenyu.jiang/go/src/golanglearning/new_project/multi_cluster_client/resource/config
