@@ -58,12 +58,15 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
+// MultiClientSet 多集群client
 type MultiClientSet struct {
-	clientSets  map[string]kubernetes.Interface
-	cluster     string
+	clientSets map[string]kubernetes.Interface
+	cluster    string
 }
 
+// Interface 嵌套接口
 type Interface interface {
+	// Cluster 选择集群
 	Cluster(cluster string) *MultiClientSet
 	kubernetes.Interface
 }
@@ -91,14 +94,12 @@ func NewForConfig(c *config.Config) (*MultiClientSet, error) {
 		}
 	}
 
-
 	return mc, nil
 }
 
-
 var _ Interface = &MultiClientSet{}
 
-func (m *MultiClientSet) Cluster(cluster string) *MultiClientSet{
+func (m *MultiClientSet) Cluster(cluster string) *MultiClientSet {
 	m.cluster = cluster
 	return m
 }
@@ -310,5 +311,3 @@ func (m *MultiClientSet) StorageV1() storagev1.StorageV1Interface {
 func (m *MultiClientSet) StorageV1alpha1() storagev1alpha1.StorageV1alpha1Interface {
 	return m.clientSets[m.cluster].StorageV1alpha1()
 }
-
-

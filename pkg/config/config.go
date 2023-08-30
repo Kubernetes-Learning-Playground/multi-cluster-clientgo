@@ -14,7 +14,7 @@ import (
 var SysConfig *Config
 
 type Config struct {
-	Clusters       []model.Cluster `json:"clusters" yaml:"clusters"`
+	Clusters []model.Cluster `json:"clusters" yaml:"clusters"`
 }
 
 func NewConfig() *Config {
