@@ -1,6 +1,6 @@
 ## kubernetes的多集群client-go。
 ### 项目思路与功能
-项目背景：本项目采用client-go包进行扩展封装，实现"**多集群**"的client-go。调用方仅需要维护config.yaml配置文件。
+项目背景：本项目对原生的client-go包进行扩展封装，实现"**多集群**"的client-go。调用方仅需要维护config.yaml配置文件。
 
 
 ### 附注：
