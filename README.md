@@ -5,8 +5,9 @@
 
 ### 附注：
 1. 目录下创建一个resource文件，把集群的.kube/config文件复制一份放入(记得cluster server需要改成"公网ip")。
-2. 本项目支持insecurity模式，所以config文件需要把certificate-authority-data字段删除，否则连接会报错(本身支持tls证书也可以不删除)。
+2. 本项目支持insecurity模式，所以config文件需要把certificate-authority-data字段删除，否则连接会报错(本身支持tls证书也可以不删除)。(重要！！)
 3. 可配置多个.kube/config配置文件。
+4. 可读取远程kubeconfig，获取客户端实例
 
 ### 配置文件
 - **重要** 配置文件可参考config.yaml中配置，调用方只需要关注配置文件中的内容即可。
@@ -27,6 +28,7 @@ clusters:                     # 集群列表
 ```
 
 ### 使用范例
+- 使用配置文件的方式
 ```go
 func main() {
     // 1. 创建文件
@@ -45,6 +47,22 @@ func main() {
     
     p3, _ := multiClient.Cluster("cluster3").CoreV1().Pods("default").List(context.Background(), v1.ListOptions{})
     for _, v := range p3.Items {
+        fmt.Println(v.Name)
+    }
+}
+```
+- 读取远端client实例
+```go
+func main() {
+    rn := &client.RemoteNode{
+        Host: "xxx",
+        Password: "xxx",
+        User: "root",
+        Port: "22",
+    }
+    c ,_ := client.GetClientByRemoteKubeConfig(rn, "./config", true)
+    p , _ := c.CoreV1().Pods("default").List(context.Background(), v1.ListOptions{})
+    for _, v := range p.Items {
         fmt.Println(v.Name)
     }
 }
