@@ -11,3 +11,13 @@ clusters:                     # 集群列表
       clusterName: cluster3
       insecure: true
       configPath: /Users/zhenyu.jiang/go/src/golanglearning/new_project/multi_cluster_client/resource/config
+  - metadata:
+      clusterName: cluster4
+      insecure: true
+      configPath: ./config
+      remoteMode: true        # 远程读取kubeconfig模式
+      remoteNode:             # 远端节点登入信息
+        host: xxx
+        password: xxx
+        user: root
+        port: 22

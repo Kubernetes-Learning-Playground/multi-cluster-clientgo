@@ -14,7 +14,6 @@ import (
 	"log"
 )
 
-
 func main() {
 	// 读取 kubeconfig 文件内容
 	kubeconfigPath := "/Users/zhenyu.jiang/go/src/golanglearning/new_project/multi_cluster_client/resource/config1"
@@ -39,7 +38,7 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-	p1 , err := clientset.CoreV1().Pods("default").List(context.Background(), v1.ListOptions{})
+	p1, err := clientset.CoreV1().Pods("default").List(context.Background(), v1.ListOptions{})
 	fmt.Println("err: ", err)
 	for _, v := range p1.Items {
 		fmt.Println(v.Name)

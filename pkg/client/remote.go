@@ -4,19 +4,13 @@ import (
 	"bytes"
 	"fmt"
 	"golang.org/x/crypto/ssh"
+	"golanglearning/new_project/multi_cluster_client/pkg/model"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"log"
 	"net"
 	"time"
 )
-
-type RemoteNode struct {
-	Host     string `json:"host" yaml:"host"`
-	User     string `json:"user" yaml:"user"`
-	Password string `json:"password" yaml:"password"`
-	Port     string `json:"port" yaml:"port"`
-}
 
 // sSHConnect 使用ssh登入
 func sSHConnect(user, password, host string, port string) (*ssh.Session, error) {
@@ -61,7 +55,7 @@ func sSHConnect(user, password, host string, port string) (*ssh.Session, error) 
 // GetClientByRemoteKubeConfig 从远程服务器获取kubeconfig path，
 // 并解析，获取到客户端。
 // 输入：kubeconfig：远端kubeconfig目录 insecure：是否跳过证书
-func GetClientByRemoteKubeConfig(remoteNode *RemoteNode, kubeconfigPath string, insecure bool) (*kubernetes.Clientset, error) {
+func GetClientByRemoteKubeConfig(remoteNode *model.RemoteNode, kubeconfigPath string, insecure bool) (*kubernetes.Clientset, error) {
 	session, err := sSHConnect(remoteNode.User, remoteNode.Password, remoteNode.Host, remoteNode.Port)
 	if err != nil {
 		return nil, err
@@ -102,4 +96,3 @@ func GetClientByRemoteKubeConfig(remoteNode *RemoteNode, kubeconfigPath string, 
 
 	return clientset, nil
 }
-

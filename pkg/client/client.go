@@ -2,6 +2,7 @@ package client
 
 import (
 	"golanglearning/new_project/multi_cluster_client/pkg/config"
+	"golanglearning/new_project/multi_cluster_client/pkg/model"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/kubernetes"
 	v1 "k8s.io/client-go/kubernetes/typed/admissionregistration/v1"
@@ -61,7 +62,7 @@ import (
 // MultiClientSet 多集群client
 type MultiClientSet struct {
 	// clientSets 存储所有的k8s clientSet
-	clientSets  map[string]kubernetes.Interface
+	clientSets map[string]kubernetes.Interface
 	// 目前是冗余字段
 	clusterList []string
 	// selectedCluster 指定时传入的集群名
@@ -79,20 +80,35 @@ type Interface interface {
 func NewForConfig(c *config.Config) (*MultiClientSet, error) {
 
 	mc := &MultiClientSet{
-		clientSets: map[string]kubernetes.Interface{},
+		clientSets:  map[string]kubernetes.Interface{},
 		clusterList: make([]string, 0),
 	}
 
 	for _, v := range c.Clusters {
 		if v.MetaData.ConfigPath != "" {
-			ccg, err := clientcmd.BuildConfigFromFlags("", v.MetaData.ConfigPath)
-			if err != nil {
-				return nil, err
-			}
-			ccg.Insecure = v.MetaData.Insecure
-			clientSet, err := kubernetes.NewForConfig(ccg)
-			if err != nil {
-				return nil, err
+			var clientSet *kubernetes.Clientset
+			var err error
+			if !v.MetaData.RemoteMode {
+				ccg, err := clientcmd.BuildConfigFromFlags("", v.MetaData.ConfigPath)
+				if err != nil {
+					return nil, err
+				}
+				ccg.Insecure = v.MetaData.Insecure
+				clientSet, err = kubernetes.NewForConfig(ccg)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				rn := &model.RemoteNode{
+					Host:     v.MetaData.RemoteNode.Host,
+					Password: v.MetaData.RemoteNode.Password,
+					User:     v.MetaData.RemoteNode.User,
+					Port:     v.MetaData.RemoteNode.Port,
+				}
+				clientSet, err = GetClientByRemoteKubeConfig(rn, v.MetaData.ConfigPath, v.MetaData.Insecure)
+				if err != nil {
+					return nil, err
+				}
 			}
 
 			mc.clientSets[v.MetaData.ClusterName] = clientSet

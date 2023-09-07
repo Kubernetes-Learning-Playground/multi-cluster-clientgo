@@ -11,7 +11,6 @@ import (
 	"os/exec"
 )
 
-
 func main() {
 	// 远程服务器的 SSH 信息
 	sshUser := "root"
@@ -64,7 +63,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	p1 , err := clientset.CoreV1().Pods("default").List(context.Background(), v1.ListOptions{})
+	p1, err := clientset.CoreV1().Pods("default").List(context.Background(), v1.ListOptions{})
 	fmt.Println("err: ", err)
 	for _, v := range p1.Items {
 		fmt.Println(v.Name)

@@ -1,12 +1,12 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"golanglearning/new_project/multi_cluster_client/pkg/client"
 	"golanglearning/new_project/multi_cluster_client/pkg/config"
 	"golanglearning/new_project/multi_cluster_client/pkg/model"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"fmt"
-	"context"
 	"log"
 )
 
@@ -21,11 +21,10 @@ func main() {
 		MetaData: model.MetaData{
 			ClusterName: "cluster1",
 			ConfigPath:  "/Users/zhenyu.jiang/go/src/golanglearning/new_project/multi_cluster_client/resource/config",
-			Insecure: true,
+			Insecure:    true,
 		},
 	}
 	cfg.Clusters = append(cfg.Clusters, cc)
-
 
 	multiClient, err := client.NewForConfig(cfg)
 	if err != nil {

@@ -17,7 +17,6 @@ type Config struct {
 	Clusters []model.Cluster `json:"clusters" yaml:"clusters"`
 }
 
-
 func NewConfig() *Config {
 	return &Config{}
 }

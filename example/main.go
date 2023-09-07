@@ -28,8 +28,8 @@ func main() {
 		fmt.Println(v.Name)
 	}
 
-	//p4, _ := multiClient.Cluster("").CoreV1().Pods("default").List(context.Background(), v1.ListOptions{})
-	//for _, v := range p4.Items {
-	//	fmt.Println(v.Name)
-	//}
+	p4, _ := multiClient.Cluster("cluster4").CoreV1().Pods("default").List(context.Background(), v1.ListOptions{})
+	for _, v := range p4.Items {
+		fmt.Println(v.Name)
+	}
 }
