@@ -7,11 +7,11 @@ type MetaData struct {
 	// Insecure 是否跳过证书认证
 	Insecure bool `json:"insecure" yaml:"insecure"`
 	// ClusterName 集群名
-	ClusterName string     `json:"clusterName" yaml:"clusterName"`
+	ClusterName string `json:"clusterName" yaml:"clusterName"`
 	// RemoteMode 远程登入模式
-	RemoteMode  bool       `json:"remoteMode" yaml:"remoteMode"`
+	RemoteMode bool `json:"remoteMode" yaml:"remoteMode"`
 	// RemoteNode 远程节点信息
-	RemoteNode  RemoteNode `json:"remoteNode" yaml:"remoteNode"`
+	RemoteNode RemoteNode `json:"remoteNode" yaml:"remoteNode"`
 }
 
 type RemoteNode struct {

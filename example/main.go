@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"golanglearning/new_project/multi_cluster_client/pkg/client"
-	"golanglearning/new_project/multi_cluster_client/pkg/config"
+	"github.com/practice/multi_cluster_client/pkg/client"
+	"github.com/practice/multi_cluster_client/pkg/config"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 

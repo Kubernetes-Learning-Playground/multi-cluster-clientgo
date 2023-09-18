@@ -3,8 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/go-yaml/yaml"
-	"golanglearning/new_project/multi_cluster_client/pkg/model"
-
+	"github.com/practice/multi_cluster_client/pkg/model"
 	"io/ioutil"
 	"log"
 )

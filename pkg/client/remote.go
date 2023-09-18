@@ -3,8 +3,8 @@ package client
 import (
 	"bytes"
 	"fmt"
+	"github.com/practice/multi_cluster_client/pkg/model"
 	"golang.org/x/crypto/ssh"
-	"golanglearning/new_project/multi_cluster_client/pkg/model"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"log"

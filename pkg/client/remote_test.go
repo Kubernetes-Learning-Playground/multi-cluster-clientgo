@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 	"fmt"
-	"golanglearning/new_project/multi_cluster_client/pkg/model"
+	"github.com/practice/multi_cluster_client/pkg/model"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"testing"
 )

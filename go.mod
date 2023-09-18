@@ -1,4 +1,4 @@
-module golanglearning/new_project/multi_cluster_client
+module github.com/practice/multi_cluster_client
 
 go 1.20
 

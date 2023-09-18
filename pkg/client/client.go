@@ -1,8 +1,8 @@
 package client
 
 import (
-	"golanglearning/new_project/multi_cluster_client/pkg/config"
-	"golanglearning/new_project/multi_cluster_client/pkg/model"
+	"github.com/practice/multi_cluster_client/pkg/config"
+	"github.com/practice/multi_cluster_client/pkg/model"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/kubernetes"
 	v1 "k8s.io/client-go/kubernetes/typed/admissionregistration/v1"
