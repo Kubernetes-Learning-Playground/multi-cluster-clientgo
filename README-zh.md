@@ -1,23 +1,21 @@
-## Multi-cluster client-go for kubernetes
-<a href="./README.md">English</a> | <a href="./README-zh.md">简体中文</a>
-### Introduction
-Project background: This project extends the native client-go package to implement the "**multi-cluster**" client-go SDK. 
+## kubernetes 的多集群 client-go
+### 项目思路与功能
+项目背景：本项目对原生的client-go包进行扩展封装，实现"**多集群**"的client-go SDK。调用方仅需要维护config.yaml配置文件。
 
-The caller only needs to maintain the config.yaml configuration file.
 
-### P.S.:
-1. Create a resource file in the directory, copy the .kube/config file of the cluster and put it in (remember that the cluster server needs to be changed to "public network ip").
-2. This project supports insecurity mode, so the certificate-authority-data field needs to be deleted in the config file, otherwise the connection will report an error (it does not need to delete it if it supports TLS certificate). (important!!)
-3. Multiple .kube/config configuration files can be configured.
-4. Can read remote kubeconfig and obtain client instance
+### 附注：
+1. 目录下创建一个resource文件，把集群的.kube/config文件复制一份放入(记得cluster server需要改成"公网ip")。
+2. 本项目支持insecurity模式，所以config文件需要把certificate-authority-data字段删除，否则连接会报错(本身支持tls证书也可以不删除)。(重要！！)
+3. 可配置多个.kube/config配置文件。
+4. 可读取远程kubeconfig，获取客户端实例
 
-### Configuration file
-- **Important** The configuration file can refer to the configuration in config.yaml. The caller only needs to pay attention to the content in the configuration file.
+### 配置文件
+- **重要** 配置文件可参考config.yaml中配置，调用方只需要关注配置文件中的内容即可。
 ```yaml
-clusters:                     # Cluster list
+clusters:                     # 集群列表
   - metadata:
-      clusterName: cluster1   # Custom cluster name
-      insecure: true          # Whether to enable skipping tls certificate authentication
+      clusterName: cluster1   # 自定义集群名
+      insecure: true          # 是否开启跳过tls证书认证
       configPath: /Users/zhenyu.jiang/go/src/golanglearning/new_project/multi_cluster_client/resource/config2 # kube config配置文件地址
   - metadata:
       clusterName: cluster2
@@ -31,22 +29,22 @@ clusters:                     # Cluster list
       clusterName: cluster4
       insecure: true
       configPath: ./config
-      remoteMode: true        # Remotely read kubeconfig mode
-      remoteNode:             # Remote node login information
+      remoteMode: true        # 远程读取kubeconfig模式
+      remoteNode:             # 远端节点登入信息
         host: xxx
         password: xxx
         user: root
         port: 22
 ```
 
-### Usage examples
-- use configuration files
+### 使用范例
+- 使用配置文件的方式
 ```go
 func main() {
-    // 1. Create a file
+    // 1. 创建文件
     c, _ := config.BuildConfig("./config.yaml")
     multiClient, _ := client.NewForConfig(c)
-    // 2. It is almost the same as the native client-go when used, except that you need to specify the cluster name.
+    // 2. 使用时与原生client-go几乎相同，只是需要多指定集群名，
     p1, _ := multiClient.Cluster("cluster1").CoreV1().Pods("default").List(context.Background(), v1.ListOptions{})
     for _, v := range p1.Items {
     	fmt.Println(v.Name)
@@ -63,7 +61,7 @@ func main() {
     }
 }
 ```
-- Read the remote client instance
+- 读取远端client实例
 ```go
 func main() {
     rn := &client.RemoteNode{
