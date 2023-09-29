@@ -1,7 +1,7 @@
 ## Multi-cluster client-go for kubernetes
 <a href="./README.md">English</a> | <a href="./README-zh.md">简体中文</a>
 ### Introduction
-Project background: This project extends the native client-go package to implement the "**multi-cluster**" client-go SDK. 
+Project background: This project extends the native client-go package to implement the "**multi-cluster**" client-go SDK(clientSet dynamicClient discoveryClient). 
 
 The caller only needs to maintain the config.yaml configuration file.
 

@@ -1,13 +1,13 @@
 ## kubernetes 的多集群 client-go
 ### 项目思路与功能
-项目背景：本项目对原生的client-go包进行扩展封装，实现"**多集群**"的client-go SDK。调用方仅需要维护config.yaml配置文件。
+项目背景：本项目对原生的 client-go 包进行扩展封装，实现"**多集群**"的 client-go SDK(clientSet dynamicClient discoveryClient)。调用方仅需要维护 config.yaml 配置文件。
 
 
 ### 附注：
-1. 目录下创建一个resource文件，把集群的.kube/config文件复制一份放入(记得cluster server需要改成"公网ip")。
-2. 本项目支持insecurity模式，所以config文件需要把certificate-authority-data字段删除，否则连接会报错(本身支持tls证书也可以不删除)。(重要！！)
-3. 可配置多个.kube/config配置文件。
-4. 可读取远程kubeconfig，获取客户端实例
+1. 目录下创建一个 resource 文件，把集群的 .kube/config 文件复制一份放入(记得 cluster server 需要改成"公网ip")。
+2. 本项目支持 insecurity 模式，所以 config 文件需要把 certificate-authority-data 字段删除，否则连接会报错(本身支持 tls 证书也可以不删除)。(重要！！)
+3. 可配置多个 .kube/config 配置文件。
+4. 可读取远程 kubeconfig ，获取客户端实例
 
 ### 配置文件
 - **重要** 配置文件可参考config.yaml中配置，调用方只需要关注配置文件中的内容即可。

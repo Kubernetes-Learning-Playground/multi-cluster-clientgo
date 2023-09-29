@@ -1,9 +1,14 @@
 package client
 
 import (
+	openapi_v2 "github.com/google/gnostic-models/openapiv2"
 	"github.com/practice/multi_cluster_client/pkg/config"
 	"github.com/practice/multi_cluster_client/pkg/model"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/version"
 	"k8s.io/client-go/discovery"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/kubernetes"
 	v1 "k8s.io/client-go/kubernetes/typed/admissionregistration/v1"
 	"k8s.io/client-go/kubernetes/typed/admissionregistration/v1alpha1"
@@ -56,6 +61,8 @@ import (
 	storagev1 "k8s.io/client-go/kubernetes/typed/storage/v1"
 	storagev1alpha1 "k8s.io/client-go/kubernetes/typed/storage/v1alpha1"
 	storagev1beta1 "k8s.io/client-go/kubernetes/typed/storage/v1beta1"
+	"k8s.io/client-go/openapi"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
@@ -63,6 +70,10 @@ import (
 type MultiClientSet struct {
 	// clientSets 存储所有的k8s clientSet
 	clientSets map[string]kubernetes.Interface
+	// dynamicClients 存储所有的k8s dynamicClient
+	dynamicClients map[string]dynamic.Interface
+	// discoveryClients 存储所有的k8s dynamicClient discoveryClient
+	discoveryClients map[string]discovery.DiscoveryInterface
 	// 目前是冗余字段
 	clusterList []string
 	// selectedCluster 指定时传入的集群名
@@ -74,19 +85,25 @@ type Interface interface {
 	// Cluster 选择集群
 	Cluster(cluster string) Interface
 	kubernetes.Interface
+	dynamic.Interface
+	discovery.DiscoveryInterface
 }
 
-// NewForConfig 初始化multi client
+// NewForConfig 初始化 multi client
 func NewForConfig(c *config.Config) (*MultiClientSet, error) {
 
 	mc := &MultiClientSet{
-		clientSets:  map[string]kubernetes.Interface{},
-		clusterList: make([]string, 0),
+		clientSets:       map[string]kubernetes.Interface{},
+		dynamicClients:   map[string]dynamic.Interface{},
+		discoveryClients: map[string]discovery.DiscoveryInterface{},
+		clusterList:      make([]string, 0),
 	}
 
 	for _, v := range c.Clusters {
 		if v.MetaData.ConfigPath != "" {
 			var clientSet *kubernetes.Clientset
+			var dynamicClient *dynamic.DynamicClient
+			var discoveryClient discovery.DiscoveryInterface
 			var err error
 			if !v.MetaData.RemoteMode {
 				ccg, err := clientcmd.BuildConfigFromFlags("", v.MetaData.ConfigPath)
@@ -98,7 +115,16 @@ func NewForConfig(c *config.Config) (*MultiClientSet, error) {
 				if err != nil {
 					return nil, err
 				}
+
+				dynamicClient, err = dynamic.NewForConfig(ccg)
+				if err != nil {
+					return nil, err
+				}
+
+				discoveryClient = clientSet.Discovery()
+
 			} else {
+				// 远程获取 kubeconfig 功能
 				rn := &model.RemoteNode{
 					Host:     v.MetaData.RemoteNode.Host,
 					Password: v.MetaData.RemoteNode.Password,
@@ -112,6 +138,8 @@ func NewForConfig(c *config.Config) (*MultiClientSet, error) {
 			}
 
 			mc.clientSets[v.MetaData.ClusterName] = clientSet
+			mc.dynamicClients[v.MetaData.ClusterName] = dynamicClient
+			mc.discoveryClients[v.MetaData.ClusterName] = discoveryClient
 			mc.clusterList = append(mc.clusterList, v.MetaData.ClusterName)
 		}
 	}
@@ -336,4 +364,48 @@ func (m *MultiClientSet) StorageV1() storagev1.StorageV1Interface {
 
 func (m *MultiClientSet) StorageV1alpha1() storagev1alpha1.StorageV1alpha1Interface {
 	return m.clientSets[m.selectedCluster].StorageV1alpha1()
+}
+
+func (m *MultiClientSet) Resource(resource schema.GroupVersionResource) dynamic.NamespaceableResourceInterface {
+	return m.dynamicClients[m.selectedCluster].Resource(resource)
+}
+
+func (m *MultiClientSet) RESTClient() rest.Interface {
+	return m.discoveryClients[m.selectedCluster].RESTClient()
+}
+
+func (m *MultiClientSet) ServerGroups() (*metav1.APIGroupList, error) {
+	return m.discoveryClients[m.selectedCluster].ServerGroups()
+}
+
+func (m *MultiClientSet) ServerResourcesForGroupVersion(groupVersion string) (*metav1.APIResourceList, error) {
+	return m.discoveryClients[m.selectedCluster].ServerResourcesForGroupVersion(groupVersion)
+}
+
+func (m *MultiClientSet) ServerGroupsAndResources() ([]*metav1.APIGroup, []*metav1.APIResourceList, error) {
+	return m.discoveryClients[m.selectedCluster].ServerGroupsAndResources()
+}
+
+func (m *MultiClientSet) ServerPreferredResources() ([]*metav1.APIResourceList, error) {
+	return m.discoveryClients[m.selectedCluster].ServerPreferredResources()
+}
+
+func (m *MultiClientSet) ServerPreferredNamespacedResources() ([]*metav1.APIResourceList, error) {
+	return m.discoveryClients[m.selectedCluster].ServerPreferredNamespacedResources()
+}
+
+func (m *MultiClientSet) ServerVersion() (*version.Info, error) {
+	return m.discoveryClients[m.selectedCluster].ServerVersion()
+}
+
+func (m *MultiClientSet) OpenAPISchema() (*openapi_v2.Document, error) {
+	return m.discoveryClients[m.selectedCluster].OpenAPISchema()
+}
+
+func (m *MultiClientSet) OpenAPIV3() openapi.Client {
+	return m.discoveryClients[m.selectedCluster].OpenAPIV3()
+}
+
+func (m *MultiClientSet) WithLegacy() discovery.DiscoveryInterface {
+	return m.discoveryClients[m.selectedCluster].WithLegacy()
 }
